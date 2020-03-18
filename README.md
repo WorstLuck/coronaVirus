@@ -1,7 +1,7 @@
 # What is this website?
 With the current unfolding world events I decided to use some numerical techniques I learned to simulate simple dynamics to model the spread of the Coronavirus disease.
 
-This is essentially a live API where you can play around with the input parameters to simulate the spread of an epidemic like the Corona Virus disease. Each time a paramter is adjusted an SIR model for the evolution of the virus re-simulates and provides visual feedback on an SIR graph as well as (for now) provides expected peak infections at which time.
+This is essentially a live API where you can play around with the input parameters to simulate the spread of an epidemic like the Corona Virus disease. Each time a parameter is adjusted an SIR model for the evolution of the virus re-simulates and provides visual feedback on an SIR graph as well as (for now) provides expected peak infections at which time.
 
 See https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model_with_vital_dynamics_and_constant_population for more information.
 
