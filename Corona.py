@@ -13,9 +13,9 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 # Instantiate app and suppress callbacks
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.config['suppress_callback_exceptions'] = True
+server = app.server
 
-def makeDash():
-    app.layout =  html.Div([
+app.layout =  html.Div([
         dbc.Form([
                     dbc.FormGroup(
                      [
@@ -51,7 +51,6 @@ def makeDash():
                     )],inline=True,),html.Br(),html.Div([
     dcc.Graph(
     id='basic-interactions',config={'scrollZoom':True,'showTips':True}),html.Br(),html.H1(id='infected')])])
-    return app.layout
 
 @app.callback([Output('basic-interactions','figure'),Output('infected','children')],[Input('pop','value'),
                                               Input('recDays','value'),Input('avgInfections','value'),Input('initialInfections','value')])
@@ -132,5 +131,7 @@ def runModel(Pop,recDays,avgInfections,initialInfections):
         },'None']
 
 if __name__ == '__main__':
-    makeDash()
-    app.run_server(debug=True)
+    app.run_server(debug=True,port=8030)
+
+
+
