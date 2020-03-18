@@ -1,5 +1,5 @@
 # What is this website?
-SIR model for the evolution of Corona Virus
+Essentially an SIR model for the evolution of the spread of an epidemic like the Corona Virus disease. https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model_with_vital_dynamics_and_constant_population for more information.
 
 With the current unfolding world events I decided to use some numerical techniques I learned to simulate simple dynamics to model the spread of the Coronavirus disease.
 
