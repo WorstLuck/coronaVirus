@@ -1,4 +1,4 @@
-# corona
+# What is this website?
 SIR model for the evolution of Corona Virus
 
 With the current unfolding world events I decided to use some numerical techniques I learned to simulate simple dynamics to model the spread of the Coronavirus disease.
