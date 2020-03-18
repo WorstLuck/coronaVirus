@@ -10,7 +10,7 @@ See https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_m
 ## Assumptions
 There are many implicit assumptions within this model, most important of which are:
 1) Recovered individuals gain permanent immunity from the virus (would have required an SIRS model instead but evidence suggests very slim chance of reinfection)
-2) Government and Quarantine measures likely understated - they are highly simplified in the sense that user may choose an approximate value for the initial population at risk.
+2) Government and Quarantine measures likely understated - they are highly simplified here in the sense that user may choose an approximate value for the initial population at risk.
 3) Assumes infected people are not quarantined, but rather, immersed within and able to infect, on average, the specified number by the user.
 
 ## Interesting dynamics to play around with and observe:
