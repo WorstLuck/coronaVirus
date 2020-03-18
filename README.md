@@ -1,7 +1,7 @@
 # What is this website?
 With the current and unfortunately unfolding world events I decided to simulate simple dynamics to model the spread of the Coronavirus disease. 
 
-This is essentially a live API where you can play around with the input parameters to simulate the spread of an epidemic like the Corona Virus disease. These parameters adjust the different inflection points for the infected curve by simualating an SIR model for the evolution of the virus. 
+This is essentially a live API where you can play around with the input parameters to simulate the spread of an epidemic. These parameters adjust the different inflection points for the infected curve by simualating an SIR model for the evolution of the virus. 
 
 Each input adjustment re-simulates and provides immediate visual feedback on an SIR graph as well as (for now) provides information about how long until the virus spreading slows down, as well as the peak number of infected people.
 
