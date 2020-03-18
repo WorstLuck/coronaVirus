@@ -13,6 +13,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 # Instantiate app and suppress callbacks
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.config['suppress_callback_exceptions'] = True
+server = app.server
 
 def makeDash():
     app.layout =  html.Div([
