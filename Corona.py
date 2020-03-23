@@ -32,7 +32,7 @@ def validate(date_text):
         return False
 
 def getSAData():
-    global SADF, maxTests,fig
+    global SADF, maxTests,fig,fig2
     
     rows = []
     
@@ -64,45 +64,56 @@ def getSAData():
     SADF = SADF.reset_index()
     SADF['Date'] = SADF['Date'].apply(lambda x: "2020-" + x)
     fig.append_trace({'x': SADF['Date'], 'y': SADF['Cases per {} tests'.format(maxTests)], 'type': 'bar', 'name': 'Cases per 100 tests'}, 1,1)
+    fig2 = subplots.make_subplots()
+    fig2['layout'].update(height=500, title='Daily cases reported in South Africa as of {}'.format(
+        SADF.reset_index()['Date'].tail(1).item()), title_x=0.5,
+                         xaxis_title="Date",
+                         yaxis_title="Daily cases reported")
+    fig2['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
+    fig2.append_trace({'x': SADF['Date'], 'y': SADF['Total cases'], 'type': 'bar','name': 'Total cases'}, 1, 1)
+    
 getSAData()
 
 app.layout =  html.Div([
-        dbc.Form([
-                    dbc.FormGroup(
-                     [
-                        dbc.Label("Population outside isolation", html_for="example-email-row"),
-                        dbc.Input(id='pop', value=25000000,
-                                  type='number',
-                                  placeholder="Enter Population",
-                            ),
-                        ],className="mr-3",
-                    ),
-                    dbc.FormGroup(
-                    [
-                        dbc.Label("Number of days before recovery", html_for="example-email-row"),
-                        dcc.Input(id='recDays', value=14, type='number',
-                            ),
-                        ],className="mr-3",
-                    )],inline=True,
+    dbc.Form([
+        dbc.FormGroup(
+            [
+                dbc.Label("Population outside isolation", html_for="example-email-row"),
+                dbc.Input(id='pop', value=25000000,
+                          type='number',
+                          placeholder="Enter Population",
+                          ),
+            ], className="mr-3",
         ),
-        dbc.Form([
-                    dbc.FormGroup(
-                    [
-                        dbc.Label("Average infections a person passes during their sickness period above", html_for="example-email-row"),
-                        dcc.Input(id='avgInfections', value=3, type='number',
-                             ),
-                        ],className="mr-3",
-                    ),
-                    dbc.FormGroup(
-                    [
-                        dbc.Label("Initial Infections", html_for="example-email-row"),
-                        dcc.Input(id='initialInfections', value=85, type='number',
-                              ),
-                        ], className="mr-3",
-                    )],inline=True,),html.Br(),html.Div([
-    dcc.Graph(
-    id='basic-interactions',config={'scrollZoom':True,'showTips':True}),html.Br(),html.H1(id='infected')]),
-        html.Br(),html.Div([dcc.Graph(id='SA',figure=fig, config={'scrollZoom': True, 'showTips': True})])])
+        dbc.FormGroup(
+            [
+                dbc.Label("Number of days before recovery", html_for="example-email-row"),
+                dcc.Input(id='recDays', value=14, type='number',
+                          ),
+            ], className="mr-3",
+        )], inline=True,
+    ),
+    dbc.Form([
+        dbc.FormGroup(
+            [
+                dbc.Label("Average infections a person passes during their sickness period above",
+                          html_for="example-email-row"),
+                dcc.Input(id='avgInfections', value=3, type='number',
+                          ),
+            ], className="mr-3",
+        ),
+        dbc.FormGroup(
+            [
+                dbc.Label("Initial Infections", html_for="example-email-row"),
+                dcc.Input(id='initialInfections', value=85, type='number',
+                          ),
+            ], className="mr-3",
+        )], inline=True, ), html.Br(), html.Div([
+        dcc.Graph(
+            id='basic-interactions', config={'scrollZoom': True, 'showTips': True}), html.Br(),
+        html.H1(id='infected')]),
+    html.Br(), html.Div([dcc.Graph(id='SA', figure=fig, config={'scrollZoom': True, 'showTips': True})]),
+html.Br(),  html.Div([dcc.Graph(id='Cases', figure=fig2, config={'scrollZoom': True, 'showTips': True})])])
 
 @app.callback([Output('basic-interactions','figure'),Output('infected','children')],[Input('pop','value'),
                                               Input('recDays','value'),Input('avgInfections','value'),Input('initialInfections','value')])
