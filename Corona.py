@@ -15,6 +15,57 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.config['suppress_callback_exceptions'] = True
 server = app.server
 
+def scrapeInfo(url,item,identifier,idName):
+    r = requests.get(url)
+    soup = BeautifulSoup(r.content,"html.parser")
+    table = soup.find(item,{identifier:idName})
+    return table
+
+def validate(date_text):
+    try:
+        datetime.datetime.strptime(date_text, '%m-%d')
+        return True
+    except:
+        return False
+
+def getSAData():
+    global SADF, maxTests,fig
+
+    table = scrapeInfo('https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_South_Africa', "table", "class",
+                       "wikitable mw-collapsible")
+    rows = []
+    for element in table.find('tbody').find_all('tr'):
+        rows.append(element.get_text().split('\n'))
+
+    Date = [row[3] for row in rows if (len(row) > 3)]
+    Date = [element for element in Date if validate(element) == True]
+    Tests = [row[35] for row in rows if (len(row) > 35)]
+    Tests = [element for element in Tests if (element.isdigit() or len(str(element)) == 0)]
+    Total = [row[25] for row in rows if (len(row) > 25)]
+    Total = [element for element in Total if (element.isdigit() or len(str(element)) == 0)]
+
+    mapper = [{n: m} for n, m in list(zip(Date, Total))]
+    SADF = pd.DataFrame(data=[d.values() for d in mapper], columns=['Total cases'],
+                        index=[list(d.keys())[0] for d in mapper])
+    SADF['Cumulative tests'] = Tests
+    SADF.index.name = 'Date'
+    SADF = SADF.replace('', np.nan)
+    SADF = SADF.apply(pd.to_numeric)
+    SADF['Daily tests'] = SADF['Cumulative tests'] - SADF['Cumulative tests'].shift(1)
+    maxTests = 100
+    SADF['Cases per {} tests'.format(maxTests)] = round((SADF['Total cases'] * maxTests) / SADF['Daily tests'], 3)
+    fig = subplots.make_subplots()
+    fig['layout'].update(height=500, title='Cases per 100 tests for South Africa as of {}'.format(SADF.reset_index()['Date'].tail(1).item()), title_x=0.5,
+                         xaxis_title="Date",
+                         yaxis_title="Cases per 100 tests")
+    fig['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
+    SADF = SADF.reset_index()
+    SADF['Date'] = SADF['Date'].apply(lambda x: "2020-" + x)
+    fig.append_trace({'x': SADF['Date'], 'y': SADF['Cases per {} tests'.format(maxTests)], 'type': 'bar', 'name': 'Cases per 100 tests'}, 1,1)
+    print("Yes")
+    fig.show()
+getSAData()
+
 app.layout =  html.Div([
         dbc.Form([
                     dbc.FormGroup(
@@ -50,7 +101,8 @@ app.layout =  html.Div([
                         ], className="mr-3",
                     )],inline=True,),html.Br(),html.Div([
     dcc.Graph(
-    id='basic-interactions',config={'scrollZoom':True,'showTips':True}),html.Br(),html.H1(id='infected')])])
+    id='basic-interactions',config={'scrollZoom':True,'showTips':True}),html.Br(),html.H1(id='infected')]),
+        html.Br(),html.Div([dcc.Graph(id='SA',figure=fig, config={'scrollZoom': True, 'showTips': True})])])
 
 @app.callback([Output('basic-interactions','figure'),Output('infected','children')],[Input('pop','value'),
                                               Input('recDays','value'),Input('avgInfections','value'),Input('initialInfections','value')])
