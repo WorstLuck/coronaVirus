@@ -8,7 +8,6 @@ import pandas as pd
 import plotly.subplots as subplots
 from bs4 import BeautifulSoup
 import datetime
-import matplotlib.pyplot as plt
 import requests
 
 r = requests.get('https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_South_Africa')
