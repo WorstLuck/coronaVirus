@@ -66,8 +66,6 @@ def getSAData():
     SADF = SADF.reset_index()
     SADF['Date'] = SADF['Date'].apply(lambda x: "2020-" + x)
     fig.append_trace({'x': SADF['Date'], 'y': SADF['Cases per {} tests'.format(maxTests)], 'type': 'bar', 'name': 'Cases per 100 tests'}, 1,1)
-    print("Yes")
-    fig.show()
 getSAData()
 
 app.layout =  html.Div([
