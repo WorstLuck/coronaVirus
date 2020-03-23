@@ -19,11 +19,10 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.config['suppress_callback_exceptions'] = True
 server = app.server
 
-def scrapeInfo(url,item,identifier,idName):
-    r = requests.get(url)
-    soup = BeautifulSoup(r.content,"html.parser")
-    table = soup.find(item,{identifier:idName})
-    return table
+r = requests.get('https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_South_Africa')
+soup = BeautifulSoup(r.content,"html.parser")
+table = soup.find("table",{"class":"wikitable mw-collapsible"})
+    
 
 def validate(date_text):
     try:
@@ -34,10 +33,9 @@ def validate(date_text):
 
 def getSAData():
     global SADF, maxTests,fig
-
-    table = scrapeInfo('https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_South_Africa', "table", "class",
-                       "wikitable mw-collapsible")
+    
     rows = []
+    
     for element in table.find('tbody').find_all('tr'):
         rows.append(element.get_text().split('\n'))
 
