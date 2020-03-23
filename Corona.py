@@ -6,11 +6,16 @@ import dash_html_components as html
 import numpy as np
 import pandas as pd
 import plotly.subplots as subplots
-import requests
 from bs4 import BeautifulSoup
 import datetime
 import matplotlib.pyplot as plt
+import requests
 
+r = requests.get('https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_South_Africa')
+soup = BeautifulSoup(r.content,"html.parser")
+table = soup.find("table",{"class":"wikitable mw-collapsible"})
+ 
+    
 # # Using generic style sheet
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -19,10 +24,6 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.config['suppress_callback_exceptions'] = True
 server = app.server
 
-r = requests.get('https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_South_Africa')
-soup = BeautifulSoup(r.content,"html.parser")
-table = soup.find("table",{"class":"wikitable mw-collapsible"})
-    
 
 def validate(date_text):
     try:
