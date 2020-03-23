@@ -6,6 +6,10 @@ import dash_html_components as html
 import numpy as np
 import pandas as pd
 import plotly.subplots as subplots
+import requests
+from bs4 import BeautifulSoup
+import datetime
+import matplotlib.pyplot as plt
 
 # # Using generic style sheet
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
