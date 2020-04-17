@@ -234,9 +234,9 @@ def runModel(Pop, recDays, avgInfections, initialInfections,worlds):
                 I_0 = I_1
                 R_0 = R_1
                 t_0 += tau
-            print('Peak infection at {} days with {} people infected at once'.format(round(np.argmax(I) * tau, 3),
+            print('On average, peak infection at {} days with {} people infected at once'.format(round(np.argmax(I) * tau, 3),
                                                                                      round(max(I)), 3))
-            stringy = 'Peak infection at {} days with {} people infected'.format(round(np.argmax(I) * tau, 3),
+            stringy = 'Peak infection at {} days with {} people infected at once'.format(round(np.argmax(I) * tau, 3),
                                                                                  round(max(I)))
             df = pd.DataFrame(data=list(zip(t, I)), columns=['Time', 'Infected'])
             df['Susceptible'] = S
