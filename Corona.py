@@ -32,7 +32,7 @@ def validate(date_text):
         return False
 
 def getSAData():
-    global SADF, maxTests, fig, fig2, fig3
+    global SADF, maxTests, fig, fig2, fig3, fig4, fig5
 
     rows = []
 
@@ -89,13 +89,29 @@ def getSAData():
     fig2.append_trace({'x': SADF['Date'], 'y': SADF['Daily cases'], 'type': 'bar', 'name': 'Total cases'}, 1, 1)
     fig2.append_trace({'x': SADF['Date'], 'y': SADF['Daily cases'], 'type': 'scatter', 'name': 'Total cases'}, 1, 1)
     fig3 = subplots.make_subplots()
-    fig3['layout'].update(height=500, title='Total cases reported in South Africa as of {}'.format(
+    fig3['layout'].update(height=500, title='Daliy tests reported in South Africa as of {}'.format(
+        SADF.reset_index()['Date'].tail(1).item()), title_x=0.5,
+                          xaxis_title="Date",
+                          yaxis_title="Daily tests reported")
+    fig3['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
+    fig3.append_trace({'x': SADF['Date'], 'y': SADF['Daily tests'], 'type': 'bar', 'name': 'Daily tests'}, 1, 1)
+    fig3.append_trace({'x': SADF['Date'], 'y': SADF['Daily tests'], 'type': 'scatter', 'name': 'Daily tests'}, 1, 1)
+    fig4 = subplots.make_subplots()
+    fig4['layout'].update(height=500, title='Total cases reported in South Africa as of {}'.format(
         SADF.reset_index()['Date'].tail(1).item()), title_x=0.5,
                           xaxis_title="Date",
                           yaxis_title="Total cases reported")
-    fig3['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
-    fig3.append_trace({'x': SADF['Date'], 'y': SADF['Total cases'], 'type': 'bar', 'name': 'Daily cases'}, 1, 1)
-    fig3.append_trace({'x': SADF['Date'], 'y': SADF['Total cases'], 'type': 'scatter', 'name': 'Daily cases'}, 1, 1)
+    fig4['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
+    fig4.append_trace({'x': SADF['Date'], 'y': SADF['Total cases'], 'type': 'bar', 'name': 'Total cases'}, 1, 1)
+    fig4.append_trace({'x': SADF['Date'], 'y': SADF['Total cases'], 'type': 'scatter', 'name': 'Total cases'}, 1, 1)
+    fig5 = subplots.make_subplots()
+    fig5['layout'].update(height=500, title='Total tests reported in South Africa as of {}'.format(
+        SADF.reset_index()['Date'].tail(1).item()), title_x=0.5,
+                          xaxis_title="Date",
+                          yaxis_title="Total tests reported")
+    fig5['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
+    fig5.append_trace({'x': SADF['Date'], 'y': SADF['Cumulative tests'], 'type': 'bar', 'name': 'Total cases'}, 1, 1)
+    fig5.append_trace({'x': SADF['Date'], 'y': SADF['Cumulative tests'], 'type': 'scatter', 'name': 'Total cases'}, 1, 1)
     
 getSAData()
 
@@ -138,8 +154,10 @@ app.layout = html.Div([
             id='basic-interactions', config={'scrollZoom': True, 'showTips': True}), html.Br(),
         html.H1(id='infected')]),
     html.Br(), html.Div([dcc.Graph(id='SA', figure=fig, config={'scrollZoom': True, 'showTips': True})]),
-    html.Br(), html.Div([dcc.Graph(id='Cases', figure=fig2, config={'scrollZoom': True, 'showTips': True})]),
-    html.Br(), html.Div([dcc.Graph(id='TotCases', figure=fig3, config={'scrollZoom': True, 'showTips': True})])])
+    html.Br(), html.Div([dcc.Graph(id='DailyCases', figure=fig2, config={'scrollZoom': True, 'showTips': True})]),
+    html.Br(), html.Div([dcc.Graph(id='Dailytests', figure=fig3, config={'scrollZoom': True, 'showTips': True})]),
+    html.Br(), html.Div([dcc.Graph(id='TotCases', figure=fig4, config={'scrollZoom': True, 'showTips': True})]),
+    html.Br(), html.Div([dcc.Graph(id='TotTests', figure=fig5, config={'scrollZoom': True, 'showTips': True})])])
 
 @app.callback([Output('basic-interactions','figure'),Output('infected','children')],[Input('pop','value'),
                                               Input('recDays','value'),Input('avgInfections','value'),Input('initialInfections','value')])
