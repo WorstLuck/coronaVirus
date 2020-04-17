@@ -120,7 +120,7 @@ app.layout = html.Div([
         dbc.FormGroup(
             [
                 dbc.Label("Population outside isolation", html_for="example-email-row"),
-                dbc.Input(id='pop', value=25000000,
+                dbc.Input(id='pop', value=1000,
                           type='number',
                           placeholder="Enter Population",
                           ),
@@ -145,97 +145,205 @@ app.layout = html.Div([
         ),
         dbc.FormGroup(
             [
+                dbc.Label("Simulated Worlds for stochastic model",
+                                  html_for="example-email-row"),
+                dcc.Input(id='worlds', value=5, type='number',
+                         ),
+            ], className="mr-3",
+        ),
+        dbc.FormGroup(
+            [
                 dbc.Label("Initial Infections", html_for="example-email-row"),
-                dcc.Input(id='initialInfections', value=85, type='number',
+                dcc.Input(id='initialInfections', value=1, type='number',
                           ),
             ], className="mr-3",
-        )], inline=True, ), html.Br(), html.Div([
+        )], inline=True, ),
+        html.Br(),
+        html.H1(id='infected'),
+        html.Br(),
+        html.Div([
         dcc.Graph(
-            id='basic-interactions', config={'scrollZoom': True, 'showTips': True}), html.Br(),
-        html.H1(id='infected')]),
+            id='basic-interactions', config={'scrollZoom': True, 'showTips': True})]),
+        html.Br(),
+        html.Div([dcc.Graph(
+            id='basic-interactions2', config={'scrollZoom': True, 'showTips': True})]),
     html.Br(), html.Div([dcc.Graph(id='SA', figure=fig, config={'scrollZoom': True, 'showTips': True})]),
     html.Br(), html.Div([dcc.Graph(id='DailyCases', figure=fig2, config={'scrollZoom': True, 'showTips': True})]),
     html.Br(), html.Div([dcc.Graph(id='Dailytests', figure=fig3, config={'scrollZoom': True, 'showTips': True})]),
     html.Br(), html.Div([dcc.Graph(id='TotCases', figure=fig4, config={'scrollZoom': True, 'showTips': True})]),
     html.Br(), html.Div([dcc.Graph(id='TotTests', figure=fig5, config={'scrollZoom': True, 'showTips': True})])])
 
-@app.callback([Output('basic-interactions','figure'),Output('infected','children')],[Input('pop','value'),
-                                              Input('recDays','value'),Input('avgInfections','value'),Input('initialInfections','value')])
-def runModel(Pop,recDays,avgInfections,initialInfections):
-    if recDays and Pop and avgInfections:
-        # Number of people self-isolating
-        selfIsolating = Pop
-        # Number of people susceptible
-        S_0 = 1
-        # Number of people infected
-        I_0 = initialInfections/selfIsolating
+@app.callback([Output('basic-interactions', 'figure'), Output('infected', 'children'),Output('basic-interactions2', 'figure')], [Input('pop', 'value'),
+                                                                                                                                 Input('recDays', 'value'),
+                                                                                                                                 Input('avgInfections','value'),
+                                                                                                                                 Input('initialInfections','value'),
+                                                                                                                                 Input('worlds','value')
+                                                                                                                                 ])
+def runModel(Pop, recDays, avgInfections, initialInfections,worlds):
+    if recDays and Pop and avgInfections and initialInfections:
+        def runRegular(recDays,Pop,avgInfections,initialInfections):
+            global fig,stringy
+            # Number of people self-isolating
+            selfIsolating = Pop
+            # Number of people susceptible
+            S_0 = Pop - initialInfections
+            # Number of people infected
+            I_0 = initialInfections
 
-        print('Initial Number of infected {}'.format(I_0 / S_0 * selfIsolating))
+            print('Initial Number of infected {}'.format(I_0 / S_0))
 
-        # Number of people recovered
-        R_0 = 0
+            # Number of people recovered
+            R_0 = 0
 
-        # Days to recovery
-        recovDays = recDays
-        # How many people the person infects every 2 weeks
-        gamma = avgInfections/recDays
-        # period of infectiousness is atleast 14 days (recovery)
-        beta = 1/recDays
+            # Days to recovery
+            recovDays = recDays
+            # How many people the person infects every 2 weeks
+            gamma = avgInfections / recDays
+            # period of infectiousness is atleast 14 days (recovery)
+            beta = 1 / recDays
 
-        # tau (time step)
-        tau = 0.1
+            # tau (time step)
+            tau = 1
 
-        t_max = 1000
+            t_max = 1000
 
-        S = [S_0]
-        I = [I_0]
-        R = [R_0]
-        t = [0]
+            S = [S_0]
+            I = [I_0]
+            R = [R_0]
+            t = [0]
 
-        def function(S_0, I_0, R_0):
-            S_dot = -gamma * S_0 * I_0
-            I_dot = gamma * S_0 * I_0 - beta * I_0
-            R_dot = beta * I_0
-            return S_dot, I_dot, R_dot
+            def function(S_0, I_0, R_0):
+                S_dot = -gamma * S_0/Pop * I_0
+                I_dot = gamma * S_0/Pop * I_0 - beta * I_0
+                R_dot = beta * I_0
+                return S_dot, I_dot, R_dot
 
-        t_0 = 0
+            t_0 = 0
 
-        while t_0 <= t_max:
-            S_1 = S_0 + tau * function(S_0, I_0, R_0)[0]
-            I_1 = I_0 + tau * function(S_0, I_0, R_0)[1]
-            R_1 = R_0 + tau * function(S_0, I_0, R_0)[2]
-            if round(R_1, 2) == 1:
-                print('Time taken for everyone to recover {} days'.format(t_0))
-                break
-            S.append(S_1)
-            I.append(I_1)
-            R.append(R_1)
-            t.append(t_0)
-            S_0 = S_1
-            I_0 = I_1
-            R_0 = R_1
-            t_0 += tau
-        print('Peak infection at {} days with {} people infected at once'.format(round(np.argmax(I) * tau,3), round(max(I) * selfIsolating),3))
-        stringy = 'Peak infection at {} days with {} people infected'.format(round(np.argmax(I) * tau,3), round(max(I) * selfIsolating))
-        df= pd.DataFrame(data = list(zip(t,I)),columns=['Time','Infected'])
-        df['Susceptible'] = S
-        df['Recovered'] = R
-        fig = subplots.make_subplots()
-        fig['layout'].update(height=500, title='SIR Model evolution of Virus',title_x=0.5,
-                         xaxis_title = "Days",
-                         yaxis_title = "Population")
-        fig['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
-        fig.append_trace({'x': df['Time'], 'y': df['Infected']*selfIsolating, 'type': 'scatter', 'name': 'Infected'}, 1, 1)
-        fig.append_trace({'x': df['Time'], 'y': df['Susceptible']*selfIsolating, 'type': 'scatter', 'name': 'Susceptible'}, 1, 1)
-        fig.append_trace({'x': df['Time'], 'y': df['Recovered']*selfIsolating, 'type': 'scatter', 'name': 'Recovered'}, 1, 1)
-        return [fig,stringy]
-    else:
-        return [{
-            'data': [],'layout': {
-        'height': 500,
+            while t_0 <= t_max:
+                S_1 = S_0 + tau * function(S_0, I_0, R_0)[0]
+                I_1 = I_0 + tau * function(S_0, I_0, R_0)[1]
+                R_1 = R_0 + tau * function(S_0, I_0, R_0)[2]
+                if I_1 < 1:
+                    break
+                S.append(S_1)
+                I.append(I_1)
+                R.append(R_1)
+                t.append(t_0)
+                S_0 = S_1
+                I_0 = I_1
+                R_0 = R_1
+                t_0 += tau
+            print('Peak infection at {} days with {} people infected at once'.format(round(np.argmax(I) * tau, 3),
+                                                                                     round(max(I)), 3))
+            stringy = 'Peak infection at {} days with {} people infected'.format(round(np.argmax(I) * tau, 3),
+                                                                                 round(max(I)))
+            df = pd.DataFrame(data=list(zip(t, I)), columns=['Time', 'Infected'])
+            df['Susceptible'] = S
+            df['Recovered'] = R
+            fig = subplots.make_subplots()
+            fig['layout'].update(height=500, title='SIR Model evolution of Virus', title_x=0.5,
+                                 xaxis_title="Days",
+                                 yaxis_title="Population")
+            fig['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
+            fig.append_trace(
+                {'x': df['Time'], 'y': df['Susceptible'], 'type': 'scatter', 'name': 'Susceptible'}, 1, 1)
+            fig.append_trace({'x': df['Time'], 'y': df['Infected'], 'type': 'scatter', 'name': 'Infected'},
+                             1, 1)
+            fig.append_trace(
+                {'x': df['Time'], 'y': df['Recovered'], 'type': 'scatter', 'name': 'Recovered'}, 1, 1)
+        runRegular(recDays,Pop,avgInfections,initialInfections)
+        if Pop <= 10000:
+            def stochasticModel(Pop, recDays, avgInfections, initialInfections,worlds):
+                global fig_stoch
+                fig_stoch = subplots.make_subplots()
+                fig_stoch['layout'].update(height=500, title='Stochastic SIR Model evolution of Virus', title_x=0.5,
+                                           xaxis_title="Days",
+                                           yaxis_title="Population")
+                fig_stoch['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
+                for i in range(0, worlds):
+                    # int; total population
+                    N = Pop
+                    # maximum elapsed time
+                    T = 1000
+
+                    # start time
+                    t = 0.0
+
+                    # recovery days
+                    recDays = 14
+
+                    # rate of infection after contact
+                    _alpha = avgInfections / recDays
+
+                    # rate of cure
+                    _beta = 1 / recDays
+
+                    # initial infected population
+                    n_I = initialInfections
+
+                    # susceptible population, set recovered to zero
+                    n_S = N - n_I
+                    n_R = 0
+
+                    # Initialize results list
+                    SIR_data = []
+                    SIR_data.append((t, n_S, n_I, n_R))
+
+                    # Main loop
+                    while t < T:
+                        if n_I == 0:
+                            break
+                        w1 = _alpha * n_S / N * n_I
+                        w2 = _beta * n_I
+                        W = w1 + w2
+                        dt = np.random.exponential(1 / W)
+                        t = t + dt
+                        if np.random.uniform(0, 1) < w1 / W:
+                            n_S = n_S - 1
+                            n_I = n_I + 1
+                        else:
+                            n_I = n_I - 1
+                            n_R = n_R + 1
+
+                        SIR_data.append((t, n_S, n_I, n_R))
+                    S = [y[1] for y in SIR_data]
+                    I = [y[2] for y in SIR_data]
+                    R = [y[3] for y in SIR_data]
+                    t = [y[0] for y in SIR_data]
+                    df_stoch = pd.DataFrame(data=list(zip(t, I)), columns=['Time', 'Infected'])
+                    df_stoch['Susceptible'] = S
+                    df_stoch['Recovered'] = R
+                    print(df_stoch)
+                    if i == 0:
+                        fig_stoch.add_scatter(x=df_stoch['Time'], y=df_stoch['Susceptible'], mode="lines", row=1, col=1,name='Susceptible',marker=dict(size=20, color='blue'))
+                        fig_stoch.add_scatter(x=df_stoch['Time'], y=df_stoch['Infected'], mode="lines", row=1, col=1,name='Infected',marker=dict(size=20, color='red'),fillcolor='red')
+                        fig_stoch.add_scatter(x=df_stoch['Time'], y=df_stoch['Recovered'], mode="lines", row=1, col=1,name='Recovered',marker=dict(size=20, color='green'),fillcolor='green')
+                    else:
+                        fig_stoch.add_scatter(x=df_stoch['Time'], y=df_stoch['Susceptible'], mode="lines", row=1, col=1,name='Susceptible',marker=dict(size=20, color='blue'),showlegend=False)
+                        fig_stoch.add_scatter(x=df_stoch['Time'], y=df_stoch['Infected'], mode="lines", row=1, col=1,name='Infected',marker=dict(size=20, color='red'),showlegend=False,fillcolor='red')
+                        fig_stoch.add_scatter(x=df_stoch['Time'], y=df_stoch['Recovered'], mode="lines", row=1, col=1,name='Recovered',showlegend=False,marker=dict(size=20, color='green'),fillcolor='green')
+            stochasticModel(Pop, recDays, avgInfections, initialInfections, worlds)
+        else:
+            return [fig,stringy,{
+            'data': [], 'layout': {
+                'height': 500,
                 'margin': {'l': 20, 'b': 30, 'r': 10, 't': 10}
             }
-        },'None']
+        }]
+        return [fig,stringy,fig_stoch]
+    else:
+        return [{
+            'data': [], 'layout': {
+                'height': 500,
+                'margin': {'l': 20, 'b': 30, 'r': 10, 't': 10}
+            }
+        }, 'None',{
+            'data': [], 'layout': {
+                'height': 500,
+                'margin': {'l': 20, 'b': 30, 'r': 10, 't': 10}
+            }
+        }]
 
 if __name__ == '__main__':
     app.run_server(debug=True,port=8030)
