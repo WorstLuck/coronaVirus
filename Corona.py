@@ -94,12 +94,12 @@ def getSAData():
                           xaxis_title="Date",
                           yaxis_title="Total cases reported")
     fig3['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
-    fig3.append_trace({'x': SADF['Date'], 'y': SADF['Total cases'], 'type': 'bar', 'name': 'Total cases'}, 1, 1)
-    fig3.append_trace({'x': SADF['Date'], 'y': SADF['Total cases'], 'type': 'scatter', 'name': 'Total cases'}, 1, 1)
+    fig3.append_trace({'x': SADF['Date'], 'y': SADF['Total cases'], 'type': 'bar', 'name': 'Daily cases'}, 1, 1)
+    fig3.append_trace({'x': SADF['Date'], 'y': SADF['Total cases'], 'type': 'scatter', 'name': 'Daily cases'}, 1, 1)
     
 getSAData()
 
-app.layout =  html.Div([
+app.layout = html.Div([
     dbc.Form([
         dbc.FormGroup(
             [
@@ -138,7 +138,8 @@ app.layout =  html.Div([
             id='basic-interactions', config={'scrollZoom': True, 'showTips': True}), html.Br(),
         html.H1(id='infected')]),
     html.Br(), html.Div([dcc.Graph(id='SA', figure=fig, config={'scrollZoom': True, 'showTips': True})]),
-html.Br(),  html.Div([dcc.Graph(id='Cases', figure=fig2, config={'scrollZoom': True, 'showTips': True})])])
+    html.Br(), html.Div([dcc.Graph(id='Cases', figure=fig2, config={'scrollZoom': True, 'showTips': True})]),
+    html.Br(), html.Div([dcc.Graph(id='TotCases', figure=fig3, config={'scrollZoom': True, 'showTips': True})])])
 
 @app.callback([Output('basic-interactions','figure'),Output('infected','children')],[Input('pop','value'),
                                               Input('recDays','value'),Input('avgInfections','value'),Input('initialInfections','value')])
