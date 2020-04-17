@@ -12,7 +12,7 @@ import requests
 
 r = requests.get('https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_South_Africa')
 soup = BeautifulSoup(r.content,"html.parser")
-table = soup.find("table",{"class":"wikitable mw-collapsible"})
+table = soup.find("table", {"class": "wikitable"})
  
     
 # # Using generic style sheet
