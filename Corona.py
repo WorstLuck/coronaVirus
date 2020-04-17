@@ -32,45 +32,70 @@ def validate(date_text):
         return False
 
 def getSAData():
-    global SADF, maxTests,fig,fig2
-    
+    global SADF, maxTests, fig, fig2, fig3
+
     rows = []
-    
+
     for element in table.find('tbody').find_all('tr'):
         rows.append(element.get_text().split('\n'))
-
-    Date = [row[3] for row in rows if (len(row) > 3)]
+    Date = [row[1] for row in rows if (len(row) > 3)]
     Date = [element for element in Date if validate(element) == True]
-    Tests = [row[35] for row in rows if (len(row) > 35)]
+    Tests = [row[33] for row in rows if (len(row) > 35)]
     Tests = [element for element in Tests if (element.isdigit() or len(str(element)) == 0)]
     Total = [row[25] for row in rows if (len(row) > 25)]
-    Total = [element for element in Total if (element.isdigit() or len(str(element)) == 0)]
-
+    new = []
+    for element in Total:
+        if element.isdigit():
+            pass
+        else:
+            for element2 in element:
+                if element2.isdigit() == False:
+                    element = element.replace(element2, '')
+        new.append(element)
+    Total = [element for element in new if element!='']
+    print(len(Date),len(Tests),len(Total))
     mapper = [{n: m} for n, m in list(zip(Date, Total))]
     SADF = pd.DataFrame(data=[d.values() for d in mapper], columns=['Total cases'],
                         index=[list(d.keys())[0] for d in mapper])
+    SADF['Total cases'] = SADF['Total cases'].astype(float)
+    SADF['Daily cases'] = SADF['Total cases'] - SADF['Total cases'].shift(1)
     SADF['Cumulative tests'] = Tests
     SADF.index.name = 'Date'
     SADF = SADF.replace('', np.nan)
     SADF = SADF.apply(pd.to_numeric)
     SADF['Daily tests'] = SADF['Cumulative tests'] - SADF['Cumulative tests'].shift(1)
     maxTests = 100
-    SADF['Cases per {} tests'.format(maxTests)] = round((SADF['Total cases'] * maxTests) / SADF['Daily tests'], 3)
+    SADF['Cases per {} tests'.format(maxTests)] = round((SADF['Daily cases'] * maxTests) / SADF['Daily tests'], 3)
+    SADF = SADF.replace([np.inf, -np.inf], np.nan)
+    print(SADF)
     fig = subplots.make_subplots()
-    fig['layout'].update(height=500, title='Cases per 100 tests for South Africa as of {}'.format(SADF.reset_index()['Date'].tail(1).item()), title_x=0.5,
+    fig['layout'].update(height=500, title='Cases per 100 tests for South Africa as of {}'.format(
+        SADF.reset_index()['Date'].tail(1).item()), title_x=0.5,
                          xaxis_title="Date",
                          yaxis_title="Cases per 100 tests")
     fig['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
     SADF = SADF.reset_index()
     SADF['Date'] = SADF['Date'].apply(lambda x: "2020-" + x)
-    fig.append_trace({'x': SADF['Date'], 'y': SADF['Cases per {} tests'.format(maxTests)], 'type': 'bar', 'name': 'Cases per 100 tests'}, 1,1)
+    fig.append_trace({'x': SADF['Date'], 'y': SADF['Cases per {} tests'.format(maxTests)], 'type': 'bar',
+                      'name': 'Cases per 100 tests'}, 1, 1)
+    fig.append_trace({'x': SADF['Date'], 'y': SADF['Cases per {} tests'.format(maxTests)], 'type': 'scatter',
+                      'name': 'Cases per 100 tests'}, 1, 1)
     fig2 = subplots.make_subplots()
     fig2['layout'].update(height=500, title='Daily cases reported in South Africa as of {}'.format(
         SADF.reset_index()['Date'].tail(1).item()), title_x=0.5,
-                         xaxis_title="Date",
-                         yaxis_title="Daily cases reported")
+                          xaxis_title="Date",
+                          yaxis_title="Daily cases reported")
     fig2['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
-    fig2.append_trace({'x': SADF['Date'], 'y': SADF['Total cases'], 'type': 'bar','name': 'Total cases'}, 1, 1)
+    fig2.append_trace({'x': SADF['Date'], 'y': SADF['Daily cases'], 'type': 'bar', 'name': 'Total cases'}, 1, 1)
+    fig2.append_trace({'x': SADF['Date'], 'y': SADF['Daily cases'], 'type': 'scatter', 'name': 'Total cases'}, 1, 1)
+    fig3 = subplots.make_subplots()
+    fig3['layout'].update(height=500, title='Total cases reported in South Africa as of {}'.format(
+        SADF.reset_index()['Date'].tail(1).item()), title_x=0.5,
+                          xaxis_title="Date",
+                          yaxis_title="Total cases reported")
+    fig3['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
+    fig3.append_trace({'x': SADF['Date'], 'y': SADF['Total cases'], 'type': 'bar', 'name': 'Total cases'}, 1, 1)
+    fig3.append_trace({'x': SADF['Date'], 'y': SADF['Total cases'], 'type': 'scatter', 'name': 'Total cases'}, 1, 1)
     
 getSAData()
 
