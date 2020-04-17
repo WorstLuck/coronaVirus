@@ -86,8 +86,8 @@ def getSAData():
                           xaxis_title="Date",
                           yaxis_title="Daily cases reported")
     fig2['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
-    fig2.append_trace({'x': SADF['Date'], 'y': SADF['Daily cases'], 'type': 'bar', 'name': 'Total cases'}, 1, 1)
-    fig2.append_trace({'x': SADF['Date'], 'y': SADF['Daily cases'], 'type': 'scatter', 'name': 'Total cases'}, 1, 1)
+    fig2.append_trace({'x': SADF['Date'], 'y': SADF['Daily cases'], 'type': 'bar', 'name': 'Daily cases'}, 1, 1)
+    fig2.append_trace({'x': SADF['Date'], 'y': SADF['Daily cases'], 'type': 'scatter', 'name': 'Daily cases'}, 1, 1)
     fig3 = subplots.make_subplots()
     fig3['layout'].update(height=500, title='Daliy tests reported in South Africa as of {}'.format(
         SADF.reset_index()['Date'].tail(1).item()), title_x=0.5,
@@ -110,8 +110,8 @@ def getSAData():
                           xaxis_title="Date",
                           yaxis_title="Total tests reported")
     fig5['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
-    fig5.append_trace({'x': SADF['Date'], 'y': SADF['Cumulative tests'], 'type': 'bar', 'name': 'Total cases'}, 1, 1)
-    fig5.append_trace({'x': SADF['Date'], 'y': SADF['Cumulative tests'], 'type': 'scatter', 'name': 'Total cases'}, 1, 1)
+    fig5.append_trace({'x': SADF['Date'], 'y': SADF['Cumulative tests'], 'type': 'bar', 'name': 'Total tests'}, 1, 1)
+    fig5.append_trace({'x': SADF['Date'], 'y': SADF['Cumulative tests'], 'type': 'scatter', 'name': 'Total tests'}, 1, 1)
     
 getSAData()
 
