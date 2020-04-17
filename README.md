@@ -3,9 +3,14 @@ With the current and unfortunately unfolding world events I decided to simulate 
 
 This is essentially a live API where you can play around with the input parameters to simulate the spread of an epidemic. When any of the parameters are adjusted - a new SIR model simulation is run and provides immediate visual feedback on an SIR graph. 
 
-The SIR graph provides information about the number of susceptible, infected, and recovered people but most importantly how long the virus will take to slow down, as well as the peak number of infected people.
+The SIR graphs provide information about the number of susceptible, infected, and recovered people but most importantly how long the virus will take to slow down, as well as the peak number of infected people. 
 
 See https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology#The_SIR_model_with_vital_dynamics_and_constant_population for more information.
+
+## Stochastic SIR model
+The stochastic SIR model in the second graph provides more accurate resemblance of real world fluctuations. You may choose to simulate multiple "worlds" with the same parameters and see drastic changes, such as some worlds where the epidemic never develops even though the initial conditions are the same as other ones where it does.
+
+Gillespie algorithm was used to solve the master equation and model discrete changes in all subgroups of infected, susceptible, and recovered people. With events occuring randomly, and exponentially distributed at a rate proportional to the one specified.
 
 ## Assumptions
 There are many implicit assumptions within this model, most important of which are:
