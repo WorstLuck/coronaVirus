@@ -120,44 +120,42 @@ result_style = {'textAlign':'center','fontWeight': 'bold','borderStyle': 'groove
 
 app.layout = dbc.Container([dbc.Container([
     dbc.Row([
-        dbc.Col(html.Div([
-                dbc.Label("Population outside isolation"),
-            html.Br(),
+        dbc.Col([dbc.Label("Population outside isolation",style=label_font)],width={'size':2,"offset":1}),
+        dbc.Col([dbc.Label("Number of days before recovery",style=label_font)],width={'size':2}),
+        dbc.Col([dbc.Label("Infections a person passes before recovery",style=label_font)],width={'size':2}),
+        dbc.Col([dbc.Label("Simulated Worlds for stochastic model",style=label_font)],width={'size':2}),
+        dbc.Col([dbc.Label("Initial Infections",style=label_font)],width={'size':2})]),
+    dbc.Row([
+        dbc.Col([
                 dbc.Input(id='pop', value=99,
                           type='number',style=input_style
                           )
-                        ]),width={'size':2,"offset":1}
+                        ],width={'size':2,"offset":1}
                     ),
-        dbc.Col(html.Div([
-                dbc.Label("Number of days before recovery"),
-            html.Br(),
+        dbc.Col([
                 dbc.Input(id='recDays', value=14, type='number',style=input_style
                           ),
-                        ]),width=2
+                        ],width=2
                     ),
-        dbc.Col(html.Div([
-                dbc.Label("Infections a person passes before recovery"),
-            html.Br(),
+        dbc.Col([
                 dbc.Input(id='avgInfections', value=3, type='number',style=input_style
                           )
-                        ]),width=2
+                        ],width=2
                     ),
-        dbc.Col(html.Div([
-                dbc.Label("Simulated Worlds for stochastic model"),
-            html.Br(),
+        dbc.Col([
                 dbc.Input(id='worlds', value=3, type='number',style=input_style
                          )
-                        ]),width=2
+                        ],width=2
                     ),
-        dbc.Col(html.Div([
-                dbc.Label("Initial Infections"),
-            html.Br(),
+        dbc.Col([
                 dbc.Input(id='initialInfections', value=85, type='number',style=input_style
                           ),
-                        ]),width={'size':2,"offset":-1}
-                    )],style={'alignContent':'Center','textAlign':'Center'})],style={'alignContent':'Center','textAlign':'Center'},fluid=True),
+                        ],width={'size':2,"offset":-1}
+                    )])],fluid=True),
         html.Br(),
-        html.H1(id='infected',style = result_style),
+    dbc.Container([
+        html.H1(id='infected',style = result_style)],fluid=True),
+    dbc.Container([
         html.Br(),
         html.Div([
         dcc.Graph(
@@ -169,7 +167,7 @@ app.layout = dbc.Container([dbc.Container([
     html.Br(), html.Div([dcc.Graph(id='DailyCases', figure=fig2, config={'scrollZoom': True, 'showTips': True})]),
     html.Br(), html.Div([dcc.Graph(id='Dailytests', figure=fig3, config={'scrollZoom': True, 'showTips': True})]),
     html.Br(), html.Div([dcc.Graph(id='TotCases', figure=fig4, config={'scrollZoom': True, 'showTips': True})]),
-    html.Br(), html.Div([dcc.Graph(id='TotTests', figure=fig5, config={'scrollZoom': True, 'showTips': True})])],fluid=True)
+    html.Br(), html.Div([dcc.Graph(id='TotTests', figure=fig5, config={'scrollZoom': True, 'showTips': True})])],fluid=True)],fluid=True)
 
 
 @app.callback([Output('basic-interactions', 'figure'), Output('infected', 'children'),Output('basic-interactions2', 'figure')], [Input('pop', 'value'),
