@@ -115,9 +115,9 @@ def getSAData():
 
 getSAData()
 
-input_style = {'textAlign':'center'}
+input_style = {'textAlign':'center','width':'auto'}
 result_style = {'textAlign':'center','fontWeight': 'bold','borderStyle': 'groove','borderColor': '#eeeeee','borderWidth': '1px'}
-
+label_font = {'textAlign':'center'}
 app.layout = dbc.Container([dbc.Container([
     dbc.Row([
         dbc.Col([dbc.Label("Population outside isolation",style=label_font)],width={'size':2,"offset":1}),
