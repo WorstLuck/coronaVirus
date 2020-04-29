@@ -77,9 +77,9 @@ def getSAData():
     SADF = SADF.reset_index()
     SADF['Date'] = SADF['Date'].apply(lambda x: "2020-" + x)
     fig.append_trace({'x': SADF['Date'], 'y': SADF['Cases per {} tests'.format(maxTests)], 'type': 'bar',
-                      'name': 'Cases per 100 tests'}, 1, 1)
+                      'name': 'Cases per test'}, 1, 1)
     fig.append_trace({'x': SADF['Date'], 'y': SADF['Cases per {} tests'.format(maxTests)], 'type': 'scatter',
-                      'name': 'Cases per 100 tests'}, 1, 1)
+                      'name': 'Cases per test'}, 1, 1)
     fig2 = subplots.make_subplots()
     fig2['layout'].update(height=500, title='Daily cases reported in South Africa as of {}'.format(
         SADF.reset_index()['Date'].tail(1).item()), title_x=0.5,
@@ -127,7 +127,7 @@ app.layout = dbc.Container([dbc.Container([
         dbc.Col([dbc.Label("Initial Infections",style=label_font)],width={'size':2})]),
     dbc.Row([
         dbc.Col([
-                dbc.Input(id='pop', value=99,
+                dbc.Input(id='pop', value=10000,
                           type='number',style=input_style
                           )
                         ],width={'size':2,"offset":1}
