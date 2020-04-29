@@ -11,12 +11,11 @@ import datetime
 import requests
 
 r = requests.get('https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_South_Africa')
-soup = BeautifulSoup(r.content,"html.parser")
+soup = BeautifulSoup(r.content, "html.parser")
 table = soup.find("table", {"class": "wikitable"})
- 
-    
+
 # # Using generic style sheet
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+external_stylesheets =[dbc.themes.SIMPLEX]
 
 # Instantiate app and suppress callbacks
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -30,6 +29,7 @@ def validate(date_text):
         return True
     except:
         return False
+
 
 def getSAData():
     global SADF, maxTests, fig, fig2, fig3, fig4, fig5
@@ -112,54 +112,52 @@ def getSAData():
     fig5['layout']['margin'] = {'l': 20, 'b': 30, 'r': 10, 't': 50}
     fig5.append_trace({'x': SADF['Date'], 'y': SADF['Cumulative tests'], 'type': 'bar', 'name': 'Total tests'}, 1, 1)
     fig5.append_trace({'x': SADF['Date'], 'y': SADF['Cumulative tests'], 'type': 'scatter', 'name': 'Total tests'}, 1, 1)
-    
+
 getSAData()
 
-app.layout = html.Div([
-    dbc.Form([
-        dbc.FormGroup(
-            [
-                dbc.Label("Population outside isolation", html_for="example-email-row"),
-                dbc.Input(id='pop', value=1000,
-                          type='number',
-                          placeholder="Enter Population",
+input_style = {'textAlign':'center'}
+result_style = {'textAlign':'center','fontWeight': 'bold','borderStyle': 'groove','borderColor': '#eeeeee','borderWidth': '1px'}
+
+app.layout = dbc.Container([dbc.Container([
+    dbc.Row([
+        dbc.Col(html.Div([
+                dbc.Label("Population outside isolation"),
+            html.Br(),
+                dbc.Input(id='pop', value=99,
+                          type='number',style=input_style
+                          )
+                        ]),width={'size':2,"offset":1}
+                    ),
+        dbc.Col(html.Div([
+                dbc.Label("Number of days before recovery"),
+            html.Br(),
+                dbc.Input(id='recDays', value=14, type='number',style=input_style
                           ),
-            ], className="mr-3",
-        ),
-        dbc.FormGroup(
-            [
-                dbc.Label("Number of days before recovery", html_for="example-email-row"),
-                dcc.Input(id='recDays', value=14, type='number',
+                        ]),width=2
+                    ),
+        dbc.Col(html.Div([
+                dbc.Label("Infections a person passes before recovery"),
+            html.Br(),
+                dbc.Input(id='avgInfections', value=3, type='number',style=input_style
+                          )
+                        ]),width=2
+                    ),
+        dbc.Col(html.Div([
+                dbc.Label("Simulated Worlds for stochastic model"),
+            html.Br(),
+                dbc.Input(id='worlds', value=3, type='number',style=input_style
+                         )
+                        ]),width=2
+                    ),
+        dbc.Col(html.Div([
+                dbc.Label("Initial Infections"),
+            html.Br(),
+                dbc.Input(id='initialInfections', value=85, type='number',style=input_style
                           ),
-            ], className="mr-3",
-        )], inline=True,
-    ),
-    dbc.Form([
-        dbc.FormGroup(
-            [
-                dbc.Label("Average infections a person passes during their sickness period above",
-                          html_for="example-email-row"),
-                dcc.Input(id='avgInfections', value=3, type='number',
-                          ),
-            ], className="mr-3",
-        ),
-        dbc.FormGroup(
-            [
-                dbc.Label("Simulated Worlds for stochastic model",
-                                  html_for="example-email-row"),
-                dcc.Input(id='worlds', value=5, type='number',
-                         ),
-            ], className="mr-3",
-        ),
-        dbc.FormGroup(
-            [
-                dbc.Label("Initial Infections", html_for="example-email-row"),
-                dcc.Input(id='initialInfections', value=1, type='number',
-                          ),
-            ], className="mr-3",
-        )], inline=True, ),
+                        ]),width={'size':2,"offset":-1}
+                    )],style={'alignContent':'Center','textAlign':'Center'})],style={'alignContent':'Center','textAlign':'Center'},fluid=True),
         html.Br(),
-        html.H1(id='infected'),
+        html.H1(id='infected',style = result_style),
         html.Br(),
         html.Div([
         dcc.Graph(
@@ -171,7 +169,8 @@ app.layout = html.Div([
     html.Br(), html.Div([dcc.Graph(id='DailyCases', figure=fig2, config={'scrollZoom': True, 'showTips': True})]),
     html.Br(), html.Div([dcc.Graph(id='Dailytests', figure=fig3, config={'scrollZoom': True, 'showTips': True})]),
     html.Br(), html.Div([dcc.Graph(id='TotCases', figure=fig4, config={'scrollZoom': True, 'showTips': True})]),
-    html.Br(), html.Div([dcc.Graph(id='TotTests', figure=fig5, config={'scrollZoom': True, 'showTips': True})])])
+    html.Br(), html.Div([dcc.Graph(id='TotTests', figure=fig5, config={'scrollZoom': True, 'showTips': True})])],fluid=True)
+
 
 @app.callback([Output('basic-interactions', 'figure'), Output('infected', 'children'),Output('basic-interactions2', 'figure')], [Input('pop', 'value'),
                                                                                                                                  Input('recDays', 'value'),
@@ -234,7 +233,7 @@ def runModel(Pop, recDays, avgInfections, initialInfections,worlds):
                 I_0 = I_1
                 R_0 = R_1
                 t_0 += tau
-            print('On average, peak infection at {} days with {} people infected at once'.format(round(np.argmax(I) * tau, 3),
+            print('Peak infection at {} days with {} people infected at once'.format(round(np.argmax(I) * tau, 3),
                                                                                      round(max(I)), 3))
             stringy = 'On average, peak infection at {} days with {} people infected at once'.format(round(np.argmax(I) * tau, 3),
                                                                                  round(max(I)))
@@ -345,8 +344,9 @@ def runModel(Pop, recDays, avgInfections, initialInfections,worlds):
             }
         }]
 
+
 if __name__ == '__main__':
-    app.run_server(debug=True,port=8030)
+    app.run_server(debug=True, port=8030)
 
 
 
