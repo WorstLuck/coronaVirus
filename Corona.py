@@ -40,9 +40,12 @@ def getSAData():
         rows.append(element.get_text().split('\n'))
     Date = [row[1] for row in rows if (len(row) > 3)]
     Date = [element for element in Date if validate(element) == True]
-    Tests = [row[33] for row in rows if (len(row) > 35)]
-    Tests = [element for element in Tests if (element.isdigit() or len(str(element)) == 0)]
-    Total = [row[25] for row in rows if (len(row) > 25)]
+    Total = [row[31] for row in rows if (len(row) > 25)]
+    Total = [element for element in Total if element[-1].isdigit()]
+    Total = [s[3::] if s.isdigit()==False else s for s in Total ]
+    Tests = [row[7] for row in rows if (len(row) > 35)]
+    Tests = [element for element in Tests if (element.isdigit() or len(str(element)) == 0 or element[-1].isdigit())]
+    Tests = [s[3::] if s.isdigit()==False else s for s in Tests]
     new = []
     for element in Total:
         if element.isdigit():
