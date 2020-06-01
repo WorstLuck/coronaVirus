@@ -12,7 +12,7 @@ import requests
 
 r = requests.get('https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_South_Africa')
 soup = BeautifulSoup(r.content, "html.parser")
-table = soup.find("table", {"class": "wikitable"})
+table = soup.find("table", {"class": "wikitable mw-collapsible mw-collapsed"})
 
 # # Using generic style sheet
 external_stylesheets =[dbc.themes.SIMPLEX]
@@ -41,11 +41,13 @@ def getSAData():
     Date = [row[1] for row in rows if (len(row) > 3)]
     Date = [element for element in Date if validate(element) == True]
     Total = [row[31] for row in rows if (len(row) > 25)]
+    Total = [element for element in Total if len(element)>0]
     Total = [element for element in Total if element[-1].isdigit()]
     Total = [s[3::] if s.isdigit()==False else s for s in Total ]
     Tests = [row[7] for row in rows if (len(row) > 35)]
     Tests = [element for element in Tests if (element.isdigit() or len(str(element)) == 0 or element[-1].isdigit())]
     Tests = [s[3::] if s.isdigit()==False else s for s in Tests]
+    Tests = Tests[:-1:]
     new = []
     for element in Total:
         if element.isdigit():
