@@ -47,7 +47,6 @@ def getSAData():
     Tests = [row[7] for row in rows if (len(row) > 35)]
     Tests = [element for element in Tests if (element.isdigit() or len(str(element)) == 0 or element[-1].isdigit())]
     Tests = [s[3::] if s.isdigit()==False else s for s in Tests]
-    Tests = Tests[:-1:]
     new = []
     for element in Total:
         if element.isdigit():
