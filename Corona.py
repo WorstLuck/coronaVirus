@@ -117,7 +117,7 @@ def getSAData():
     fig5.append_trace({'x': SADF['Date'], 'y': SADF['Cumulative tests'], 'type': 'bar', 'name': 'Total tests'}, 1, 1)
     fig5.append_trace({'x': SADF['Date'], 'y': SADF['Cumulative tests'], 'type': 'scatter', 'name': 'Total tests'}, 1, 1)
 
-getSAData()
+# getSAData()
 
 input_style = {'textAlign':'center','width':'auto'}
 result_style = {'textAlign':'center','fontWeight': 'bold','borderStyle': 'groove','borderColor': '#eeeeee','borderWidth': '1px'}
