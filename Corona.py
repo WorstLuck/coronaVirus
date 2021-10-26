@@ -118,6 +118,12 @@ def getSAData():
     fig5.append_trace({'x': SADF['Date'], 'y': SADF['Cumulative tests'], 'type': 'scatter', 'name': 'Total tests'}, 1, 1)
 
 # getSAData()
+fig = subplots.make_subplots()
+fig1 = subplots.make_subplots()
+fig2 = subplots.make_subplots()
+fig3 = subplots.make_subplots()
+fig4 = subplots.make_subplots()
+fig5 = subplots.make_subplots()
 
 input_style = {'textAlign':'center','width':'auto'}
 result_style = {'textAlign':'center','fontWeight': 'bold','borderStyle': 'groove','borderColor': '#eeeeee','borderWidth': '1px'}
