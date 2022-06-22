@@ -23,7 +23,7 @@ idna==2.8
 itsdangerous==1.1.0
 Jinja2==2.10.3
 MarkupSafe==1.1.1
-numpy==1.18.2
+numpy==1.22.0
 pandas==0.25.3
 plotly==4.4.1
 pycparser==2.19
