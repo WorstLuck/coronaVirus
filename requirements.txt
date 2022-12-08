@@ -1,7 +1,7 @@
 beautifulsoup4==4.8.2
 attrs==19.3.0
 boxsdk==2.6.1
-certifi==2019.11.28
+certifi==2022.12.7
 cffi==1.13.2
 chardet==3.0.4
 Click==7.0
